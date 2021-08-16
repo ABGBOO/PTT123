@@ -1,0 +1,30 @@
+string Search_String = "";
+        Boolean u_select = false;
+        int word_length = 0;
+       }
+
+
+  if (u_select)
+         {
+           word_length = Search_String.Length; 
+
+           Search_String = Left(Search_String, (word_length - 3));
+
+ Label1.Text = Search_String;
+       }
+       else
+         {
+
+  Label1.Text = "您尚未點選任何一個DowndropList子選項";
+         
+           return;
+       }        
+ SqlDataSource1.SelectCommand = "SELECT [日期], [內文], [留言] FROM  [dbo].[ptt123] WHERE " + Search_String;
+
+public static string Left(string param, int length)
+    {
+
+ string result = param.Substring(0, length);
+
+return result;
+    }
