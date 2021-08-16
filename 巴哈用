@@ -1,30 +1,92 @@
-string Search_String = "";
-        Boolean u_select = false;
-        int word_length = 0;
-       }
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+using System.Data.SqlClient;
+using System.Configuration;
 
-
-  if (u_select)
-         {
-           word_length = Search_String.Length; 
-
-           Search_String = Left(Search_String, (word_length - 3));
-
- Label1.Text = Search_String;
-       }
-       else
-         {
-
-  Label1.Text = "您尚未點選任何一個DowndropList子選項";
-         
-           return;
-       }        
- SqlDataSource1.SelectCommand = "SELECT [日期], [內文], [留言] FROM  [dbo].[ptt123] WHERE " + Search_String;
-
-public static string Left(string param, int length)
+namespace 試作.搜尋引擎
+{
+    public partial class 搜尋2 : System.Web.UI.Page
     {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!this.IsPostBack)
+            {
+                SqlDataSource1.SelectCommand = "SELECT [日期], [內文], [留言] FROM  [dbo].[ptt123]";
+            }
 
- string result = param.Substring(0, length);
+        }
 
-return result;
-    }
+        protected void Button1_Click(object sender, EventArgs e)
+        {
+
+            string Search_String = "";
+            Boolean u_select = false;
+            int word_length = 0;
+
+            for (int i = 0; i < DDL1.Items.Count; i++)
+            {
+                if (DDL1.Items[i].Selected)
+                {
+                    Search_String += DDL1.Items[i].Text + ",";
+                }   
+               
+            }
+
+
+            if (u_select)
+            {
+                string Left(string param, int length)
+                {
+
+                    string result = param.Substring(0, length);
+
+                    return result;
+                }
+                word_length = Search_String.Length;
+
+                Search_String = Left(Search_String, (word_length - 3));
+
+                Label1.Text = Search_String;
+            }
+            else
+            {
+
+                Label1.Text = "您尚未點選任何一個DowndropList子選項";
+
+                return;
+            }
+            SqlDataSource1.SelectCommand = "SELECT [日期], [內文], [留言] FROM  [dbo].[ptt123] WHERE " + Search_String;
+
+            
+        }
+
+
+           
+
+            
+
+            /*string _queryString = "SELECT  [內文], [留言] FROM [dbo].[ptt123]";
+            _queryString += string.Format(" where 內文 like '%'+@內文+'%'", DDL1.SelectedValue);
+            SqlDataSource1.SelectCommand = _queryString;
+            SqlDataSource1.SelectParameters.Add(new ControlParameter(DDL1.SelectedValue, TypeCode.String, "TextBox1", "Text"));這段好像是錯的，還要再檢查*/  
+
+
+
+        }
+
+
+      
+        {
+          
+
+
+        }
+    
+
+
+
