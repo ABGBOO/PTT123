@@ -24,18 +24,18 @@ namespace 試作.搜尋引擎
         protected void Button1_Click(object sender, EventArgs e)
         {
 
-            string Search_String = "";
-            Boolean u_select = false;
-            int word_length = 0;
+                string Search_String = "";
+                Boolean u_select = false;
+                int word_length = 0;
 
-            for (int i = 0; i < DDL1.Items.Count; i++)
-            {
-                if (DDL1.Items[i].Selected)
+                for (int i = 0; i < DDL1.Items.Count; i++)
                 {
-                    Search_String += DDL1.Items[i].Text + ",";
-                }   
-               
-            }
+                        if (DDL1.Items[i].Selected)
+                        {
+                            Search_String += DDL1.Items[i].Text + ",";
+                        }   
+
+                }
 
 
             if (u_select)
@@ -46,22 +46,22 @@ namespace 試作.搜尋引擎
                     string result = param.Substring(0, length);
 
                     return result;
-                }
-                word_length = Search_String.Length;
+                        }
+                            word_length = Search_String.Length;
 
-                Search_String = Left(Search_String, (word_length - 3));
+                            Search_String = Left(Search_String, (word_length - 3));
 
-                Label1.Text = Search_String;
-            }
+                            Label1.Text = Search_String;
+                        }
             else
             {
 
-                Label1.Text = "您尚未點選任何一個DowndropList子選項";
+                    Label1.Text = "您尚未點選任何一個DowndropList子選項";
 
-                return;
+                    return;
             }
-            SqlDataSource1.SelectCommand = "SELECT [日期], [內文], [留言] FROM  [dbo].[ptt123] WHERE " + Search_String;
-
+                    SqlDataSource1.SelectCommand = "SELECT [日期], [內文], [留言] FROM  [dbo].[ptt123] WHERE " + Search_String;   
+            
             
         }
 
@@ -77,13 +77,9 @@ namespace 試作.搜尋引擎
 
 
 
-        }
+                       }
 
-
-      
-        {
-          
-
+                {
 
         }
     
