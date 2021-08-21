@@ -12,6 +12,7 @@ namespace 試作.搜尋引擎
 {
     public partial class 搜尋2 : System.Web.UI.Page
     {
+        string Search_String = "";
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!this.IsPostBack)
@@ -24,18 +25,38 @@ namespace 試作.搜尋引擎
         protected void Button1_Click(object sender, EventArgs e)
         {
 
-                string Search_String = "";
-                Boolean u_select = false;
-                int word_length = 0;
+            
 
-                for (int i = 0; i < DDL1.Items.Count; i++)
+            if (DDL1.SelectedValue != "")
+            {
+                string mainconn = ConfigurationManager.ConnectionStrings["G HConnectionString"].ConnectionString;
+                SqlConnection sqlconn = new SqlConnection(mainconn);
+                sqlconn.Open();
+                SqlCommand sqlcomm = new SqlCommand();
+                sqlcomm.Connection = sqlconn;
+                DataTable AAA = new DataTable();
+                SqlDataAdapter sda = new SqlDataAdapter(sqlcomm);
+
+                sqlcomm.Parameters.AddWithValue("內文", TextBox1.Text);
+                sqlcomm.Parameters.AddWithValue("留言", TextBox1.Text);
+
+                GridView1.DataSource = AAA;
+                GridView1.DataBind();
+            }
+
+            string Search_String = "";
+            Boolean u_select = false;
+            int word_length = 0;
+
+            for (int i = 0; i < DDL1.Items.Count; i++)
+            {
+                if (DDL1.Items[i].Selected)
                 {
-                        if (DDL1.Items[i].Selected)
-                        {
-                            Search_String += DDL1.Items[i].Text + ",";
-                        }   
-
+                    Search_String += DDL1.Items[i].Text;
+                    u_select = true; /*這邊要判斷是真*/
                 }
+
+            }
 
 
             if (u_select)
@@ -46,42 +67,108 @@ namespace 試作.搜尋引擎
                     string result = param.Substring(0, length);
 
                     return result;
-                        }
-                            word_length = Search_String.Length;
+                }
+                        word_length = Search_String.Length; /*length 要用英文的長度來判斷*/
 
-                            Search_String = Left(Search_String, (word_length - 3));
+                        Search_String = Left(Search_String, (word_length)); /*length 要看情況使用-or+*/
 
-                            Label1.Text = Search_String;
-                        }
+                        Label1.Text = Search_String;
+            }
+
+
             else
-            {
+                {
 
                     Label1.Text = "您尚未點選任何一個DowndropList子選項";
 
                     return;
-            }
-                    SqlDataSource1.SelectCommand = "SELECT [日期], [內文], [留言] FROM  [dbo].[ptt123] WHERE " + Search_String;   
-            
-            
-        }
-
+                }
 
            
 
-            
+            SqlDataSource1.SelectCommand = "SELECT * FROM  [dbo].[ptt123] where 內文 like '" + Search_String + "'";
 
-            /*string _queryString = "SELECT  [內文], [留言] FROM [dbo].[ptt123]";
-            _queryString += string.Format(" where 內文 like '%'+@內文+'%'", DDL1.SelectedValue);
-            SqlDataSource1.SelectCommand = _queryString;
-            SqlDataSource1.SelectParameters.Add(new ControlParameter(DDL1.SelectedValue, TypeCode.String, "TextBox1", "Text"));這段好像是錯的，還要再檢查*/  
-
-
-
-                       }
-
-                {
 
         }
+
+
+
+
+       /* String sqlquery = "select * from [dbo].[ptt123] where 內文 like '%'+@Search_String+'%'";*/
+
+        protected void GridView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SqlConnection con = new SqlConnection();
+            con.ConnectionString = ConfigurationManager.ConnectionStrings["G HConnectionString"].ToString();
+            con.Open();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandText = "select * from [dbo].[ptt123]";
+            cmd.Connection = con;
+            SqlDataReader rd = cmd.ExecuteReader();
+            object dt = null;
+            GridView1.DataSource = dt;
+            GridView1.DataBind();
+
+        }
+
+        protected void GridView2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SqlConnection con = new SqlConnection();
+            con.ConnectionString = ConfigurationManager.ConnectionStrings["G HConnectionString"].ToString();
+            con.Open();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandText = "SELECT [日期], [內文], [留言] FROM  [dbo].[ptt123] where 內文 like '" + Search_String + "'";
+            cmd.Connection = con;
+            SqlDataReader rd = cmd.ExecuteReader();
+            object dt = null;
+            GridView2.DataSource = dt;
+            GridView2.DataBind();
+        }
+
+        protected void SqlDataSource1_Selecting(object sender, SqlDataSourceSelectingEventArgs e)
+        {
+
+        }
+
+
+
+
+        /*  string mainconn = ConfigurationManager.ConnectionStrings["G HConnectionString"].ConnectionString;
+          SqlConnection sqlconn = new SqlConnection(mainconn);
+          sqlconn.Open();
+          SqlCommand sqlcomm = new SqlCommand();
+          sqlcomm.Connection = sqlconn;
+          DataSet AAA = new DataSet();
+          SqlDataAdapter sda = new SqlDataAdapter(sqlcomm);
+          String sqlquery = "select * from [dbo].[ptt123] where 內文 like '%'+@推薦+'%'";//這邊可以做修正 直接把@內文改成想要搜尋的文字
+          String sqlquery2 = "select * from [dbo].[ptt123] where 留言 like '%'+@留言+'%'";//這邊同上，但最主要的問題仍然是下拉式選單的選擇
+          sqlcomm.CommandText = sqlquery;
+          sqlcomm.CommandText = sqlquery2;
+          sqlcomm.Parameters.AddWithValue("內文", TextBox1.Text);
+          sqlcomm.Parameters.AddWithValue("留言", TextBox1.Text);
+          sda.Fill(AAA);
+          GridView1.DataSource = AAA;
+          GridView1.DataBind();
+
+          SqlDataSource1.SelectParameters.Clear();
+
+
+
+          string _queryString = "SELECT  [內文], [留言] FROM [dbo].[ptt123]";
+          _queryString += string.Format(" where 內文 like '%'+@內文+'%'", DDL1.SelectedValue);
+          SqlDataSource1.SelectCommand = _queryString;
+          SqlDataSource1.SelectParameters.Add(new ControlParameter(DDL1.SelectedValue, TypeCode.String, "TextBox1", "Text"));*/
+
+
+
+    }
+
+
+   
+}
+
+    
+
     
 
 
