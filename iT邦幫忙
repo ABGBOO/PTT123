@@ -1,0 +1,136 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+using System.Data.SqlClient;
+using System.Configuration;
+
+namespace 試作.搜尋引擎
+{
+    public partial class 搜尋2 : System.Web.UI.Page
+    {
+        string Search_String = "";
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            string mainconn = ConfigurationManager.ConnectionStrings["G HConnectionString"].ConnectionString;
+            SqlConnection sqlconn = new SqlConnection(mainconn);
+            sqlconn.Open();
+            SqlCommand sqlcomm = new SqlCommand();
+            sqlcomm.Connection = sqlconn;
+            DataTable AAA = new DataTable();
+            SqlDataAdapter sda = new SqlDataAdapter(sqlcomm);
+
+            sqlcomm.Parameters.AddWithValue("內文", TextBox1.Text);
+            sqlcomm.Parameters.AddWithValue("留言", TextBox1.Text);
+
+            GridView1.DataSource = AAA;
+            GridView1.DataBind();
+        }
+
+        protected void Button1_Click(object sender, EventArgs e)
+        {
+
+            
+
+            
+
+            string Search_String = "";
+            Boolean u_select = false;
+            int word_length = 0;
+
+            for (int i = 0; i < DDL1.Items.Count; i++)
+            {
+                if (DDL1.Items[i].Selected)
+                {
+                    Search_String += DDL1.Items[i].Text;
+                    u_select = true; /*這邊要判斷是真*/
+                }
+
+            }
+
+
+            if (u_select)
+            {
+                string Left(string param, int length)
+                {
+
+                    string result = param.Substring(0, length);
+
+                    return result;
+                }
+                        word_length = Search_String.Length; /*length 要用英文的長度來判斷*/
+
+                        Search_String = Left(Search_String, (word_length)); /*length 要看情況使用-or+*/
+
+                        Label1.Text = Search_String;
+            }
+
+
+            else
+                {
+
+                    Label1.Text = "您尚未點選任何一個DowndropList子選項";
+
+                    return;
+                }
+
+           
+
+            SqlDataSource1.SelectCommand = "SELECT * FROM  [dbo].[ptt123] where 內文 like '" + Search_String + "'";
+
+
+        }
+
+
+
+
+       /* String sqlquery = "select * from [dbo].[ptt123] where 內文 like '%'+@Search_String+'%'";*/
+
+        protected void GridView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SqlConnection con = new SqlConnection();
+            con.ConnectionString = ConfigurationManager.ConnectionStrings["G HConnectionString"].ToString();
+            con.Open();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandText = "select * from [dbo].[ptt123]";
+            cmd.Connection = con;
+            SqlDataReader rd = cmd.ExecuteReader();
+            object dt = null;
+            GridView1.DataSource = dt;
+            GridView1.DataBind();
+
+        }
+
+
+        protected void GridView2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SqlConnection con = new SqlConnection();
+            con.ConnectionString = ConfigurationManager.ConnectionStrings["G HConnectionString"].ToString();
+            con.Open();
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandText = "SELECT [日期], [內文], [留言] FROM  [dbo].[ptt123] where 內文 like '" + Search_String + "'";
+            cmd.Connection = con;
+            SqlDataReader rd = cmd.ExecuteReader();
+            object dt = null;
+            GridView2.DataSource = dt;
+            GridView2.DataBind();
+        }
+
+        protected void SqlDataSource1_Selecting(object sender, SqlDataSourceSelectingEventArgs e)
+        {
+
+        }
+
+    }
+
+}
+
+    
+
+    
+
+
+
